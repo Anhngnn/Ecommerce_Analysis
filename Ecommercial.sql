@@ -8,6 +8,15 @@ SELECT * FROM products
 SELECT * FROM website_pageviews
 SELECT * FROM website_sessions
 
+SELECT 
+DATETRUNC(month,created_at) AS month,
+SUM(price_usd) as total_revenue,
+SUM(cogs_usd) as total_cost,
+SUM(price_usd) - SUM(cogs_usd) AS profit
+FROM orders
+GROUP BY DATETRUNC(month,created_at)
+ORDER BY month
+
 
 ---GROWTH:
 WITH CTE_Sessions as 
@@ -59,6 +68,21 @@ SELECT
 	ROUND(SUM(view_billing)*1.0/SUM(view_cart),4)*100 AS cart_to_billing,
 	ROUND(SUM(made_orders)*1.0/SUM(view_billing),4)*100 AS billing_to_orders
 FROM CTE_SessionLevel
+
+--Channel theo thời gian
+SELECT 
+YEAR(created_at) as year,
+MONTH(created_at) as month,
+utm_source,
+utm_campaign,
+COUNT(*) AS session
+FROM website_sessions
+GROUP BY YEAR(created_at),
+MONTH(created_at),
+utm_source,
+utm_campaign
+ORDER BY utm_source,utm_campaign,Year,Month
+
 
 --LADING PAGE ANALYSIS: lading page nào khiến user không vào product
 WITH Lading_page as
